@@ -13,8 +13,6 @@ var dx = number;
 var dy = 3;
 var dxPaddle = 3;
 var paddley = canvas.height - 15;
-var powerup = false;
-var powerupXY = [];
 var barx = [];
 var bary = [];
 var paddleHeight = 30;
@@ -61,9 +59,6 @@ function draw() {
 	if (check) {
 		buildBars();
 	}
-	if (powerup) {
-		powerUp();
-	}
 	movePaddle();
 	checkHit();
 	checkBars();
@@ -82,11 +77,7 @@ function draw() {
 	for (var a = barx.length - 1; a >= 0; a--) {
 		if (barx[a] < x - r  && x - r < barx[a] + 50 && y - r - 15 < bary[a] && y - r - 15 > bary[a] - 30) {
 			dy = -dy;
-			powerupXY.push(barx[a])
-			powerupXY.push(bary[a])
 			delete barx[a];
-			powerup = true;
-
 		}
 	};
 
@@ -192,12 +183,4 @@ function movePaddle() {
 	if(leftPressed == false) {
 		paddlex +=0
 	}
-}
-function powerUp() {
-	ctx.beginPath();
-	ctx.arc(powerupXY[0] + 25, powerupXY[1] + 5,r, 0, Math.PI * 2);
-	ctx.fillStyle = "rgb(255, 255,  255)"
-	ctx.fill();
-	ctx.closePath();
-	powerupXY[1] += 2
 }
