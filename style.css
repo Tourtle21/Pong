@@ -1,0 +1,10 @@
+* {
+	margin: 0 auto;
+	padding: 0;
+}
+canvas {
+	background: rgb(100, 0, 255);
+	display: block;
+	margin: 0 auto;
+	border-style: solid;
+}
