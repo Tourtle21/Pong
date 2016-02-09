@@ -2,7 +2,7 @@ var canvas = document.getElementById("myCanvas");
 
 number = Math.random() - 1 + Math.random()
 var ctx = canvas.getContext("2d");
-setInterval(draw, 10);
+setInterval(draw, 0);
 var check = true
 var hi = 565;
 var hello = 30;
@@ -10,18 +10,19 @@ var r = 10;
 var x = canvas.width/2;
 var y = canvas.height -100;
 var dx = number;
-var dy = 3;
+var dy = 1;
 var dxPaddle = 3;
 var paddley = canvas.height - 15;
 var powerup = false;
 var powerupXY = [];
 var barx = [];
 var bary = [];
-var paddleHeight = 30;
+var paddleHeight = 10;
 var paddleWidth = 75;
-var point = 0;
+var points = 0;
 var paddlex = (canvas.width / 2) - (paddleWidth / 2);
-
+var time = 0
+var color = ""
 
 var rightPressed = false;
 var leftPressed = false;
@@ -69,15 +70,28 @@ function draw() {
 	checkBars();
 	drawPaddle()
 	draw_ball()
+	document.getElementById("points").innerHTML = "Score: " + points
 	x = x + dx;
 	y = y + dy;
 
-
+	if (points == 6030) {
+		alert("YOU WON")
+	}
 
 
 	if (y > canvas.height) {
-		alert("you just got powned")
-		location.reload();
+		if (paddlex <= x && paddlex + paddleWidth >= x && dx > 0) {
+			dy = -dy;
+			dx = dx - 0.5;
+		}
+		if (paddlex <= x && paddlex + paddleWidth >= x && dx < 0) {
+			dy = -dy;
+			dx = dx + 0.5;
+		}
+		else {
+			alert("you just got powned")
+			location.reload();
+		}
 	}
 	for (var a = barx.length - 1; a >= 0; a--) {
 		if (barx[a] < x - r  && x - r < barx[a] + 50 && y - r - 15 < bary[a] && y - r - 15 > bary[a] - 30) {
@@ -85,7 +99,18 @@ function draw() {
 			powerupXY.push(barx[a])
 			powerupXY.push(bary[a])
 			delete barx[a];
+			var random = Math.random();
+			if (random > 0.5 && powerup == false) {
+				color = "rgb(255, 255, 255)"
+			}
+			if (random < 0.5 && powerup == false) {
+				color = "rgb(255, 0, 0)"
+			}
+
 			powerup = true;
+
+
+			points += Math.abs(200 - bary[a])
 
 		}
 	};
@@ -147,30 +172,30 @@ function checkHit() {
 	}
 	}
 	else if (canvas.height - 15 - r < y && (x > paddlex && x < paddleWidth + paddlex)) {
-		if (x >= paddlex && x <= paddlex + (paddleWidth / 5) && dx < 2 && dy > 0) {
+		if (x >= paddlex && x <= paddlex + (paddleWidth / 5) && dx < 1.5 && dy > 0) {
 			dy = -dy;
-			dx = dx - 1.15;
+			dx = dx - 0.9;
 
 		}
 
 
-		if (x >= paddlex + (paddleWidth / 5)+1 && x <= paddlex + (paddleWidth / 5) * 2 && dx < 2 && dy > 0) {
+		if (x >= paddlex + (paddleWidth / 5)+1 && x <= paddlex + (paddleWidth / 5) * 2 && dx < 1.5 && dy > 0) {
 			dy = -dy;
-			dx = dx - 0.62;
+			dx = dx - 0.4;
 		}
 
 		if (x >= paddlex + (paddleWidth / 5) * 2 + 1 && x <= paddlex + (paddleWidth / 5) * 3 && dy > 0) {
 			dy = -dy;
 		}
-		if (x >= paddlex + (paddleWidth / 5) * 3 + 1 && x <= paddlex + (paddleWidth / 5) * 4 && dx > -2 && dy > 0) {
+		if (x >= paddlex + (paddleWidth / 5) * 3 + 1 && x <= paddlex + (paddleWidth / 5) * 4 && dx > -1.5 && dy > 0) {
 			dy = -dy;
-			dx = dx + 0.63;
+			dx = dx + 0.4;
 
 
 		}
-		if (x >= paddlex + (paddleWidth / 5) * 4 + 1 && x <= paddlex + paddleWidth && dx > -2 && dy > 0) {
+		if (x >= paddlex + (paddleWidth / 5) * 4 + 1 && x <= paddlex + paddleWidth && dx > -1.5 && dy > 0) {
 			dy = -dy;
-			dx = dx + 1.14;
+			dx = dx + 0.9;
 		}
 
 	}
@@ -194,10 +219,87 @@ function movePaddle() {
 	}
 }
 function powerUp() {
+	var random = Math.random();
 	ctx.beginPath();
 	ctx.arc(powerupXY[0] + 25, powerupXY[1] + 5,r, 0, Math.PI * 2);
-	ctx.fillStyle = "rgb(255, 255,  255)"
+	ctx.fillStyle = color;
 	ctx.fill();
 	ctx.closePath();
-	powerupXY[1] += 2
+	powerupXY[1] += 1
+	if (time > 0) {
+		time += 1;
+	}
+	if (canvas.height < powerupXY[1]) {
+		powerupXY = [];
+		powerup = false;
+	}
+
+	if (canvas.height - 12 - r < powerupXY[1] && (powerupXY[0] + 25 > paddlex && powerupXY[0] + 5 < paddleWidth + paddlex)) {
+		if (color == "rgb(255, 255, 255)" && random > 0.5) {
+			powerupXY = [];
+			paddleWidth *= 2;
+			time += 1;
+		}
+		if (color == "rgb(255, 255, 255)" && random < 0.5) {
+			powerupXY = [];
+			paddleWidth /= 2;
+			time += 1;
+		}
+		if (color == "rgb(255, 0, 0)" && random > 0.5) {
+			if (dy > 0) {
+				powerupXY = [];
+				dy += 0.5
+				time += 1;
+			}
+			else {
+				powerupXY = [];
+				dy -= 0.5
+				time += 1;
+			}
+		}
+		if (color == "rgb(255, 0, 0)" && random < 0.5) {
+			if (dy > 0) {
+				powerupXY = [];
+				dy -= 0.5
+				time+= 1;
+			}
+			else {
+				powerupXY = [];
+				dy += 0.5
+				time+= 1;
+			}
+		}
+	}
+
+	if (time == 1000) {
+		powerup = false;
+		powerupXY = [];
+		time = 0;
+		if (paddleWidth > 75) {
+			paddleWidth /= 2;
+		}
+		else if (paddleWidth < 75) {
+			paddleWidth *=2;
+		}
+		else if (dy > 1 || dy < -1) {
+			if (dy < 0) {
+				dy += 0.5
+			}
+			if (dy > 0) {
+				dy -= 0.5
+			}
+		}
+		else if (dy < 1 && dy > -1) {
+			if (dy < 0) {
+				dy -= 0.5
+			}
+			if (dy > 0) {
+				dy += 0.5
+			}
+		}
+	}
+	if (canvas.height < powerupXY[1]) {
+		powerupXY = [];
+		powerup = false;
+	}
 }
