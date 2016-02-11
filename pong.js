@@ -10,6 +10,10 @@ var r = 10;
 var x = canvas.width/2;
 var y = canvas.height -100;
 var dx = number;
+var X = 400;
+var Y = 400;
+var dY = 1.5
+var dX = -0.25
 var dy = 1;
 var dxPaddle = 3;
 var paddley = canvas.height - 15;
@@ -23,9 +27,13 @@ var points = 0;
 var paddlex = (canvas.width / 2) - (paddleWidth / 2);
 var time = 0
 var color = ""
-
+var breakBar = true;
+var changeDirections = true;
+var dialation = false;
 var rightPressed = false;
 var leftPressed = false;
+var ballTwo = false;
+var grow = true;
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 
@@ -39,6 +47,7 @@ function keyDownHandler(k) {
 	if(k.keyCode == 39) {
 		rightPressed = true;
 	}
+	console.log(k.keyCode)
 }
 
 
@@ -65,20 +74,51 @@ function draw() {
 	if (powerup) {
 		powerUp();
 	}
-	movePaddle();
+	if (ballTwo) {
+		draw_ballTwo();
+		checkHitTwo();
+	}
+	if (dialation) {
+		if (grow) {
+				r += 0.25;
+		}
+		if (r > 50) {
+			grow = false;
+		}
+		if (grow == false) {
+			r-=0.25
+		}
+		if (r < 0.25) {
+			grow = true;
+		}
+	}
+	breakBlocks();
 	checkHit();
+	movePaddle();
 	checkBars();
 	drawPaddle()
 	draw_ball()
+
 	document.getElementById("points").innerHTML = "Score: " + points
+	if (ballTwo){
+		X = X + dX;
+		Y = Y + dY;
+	}
 	x = x + dx;
 	y = y + dy;
 
-	if (points == 6030) {
+	if (points >= 6030) {
 		alert("YOU WON")
 	}
 
+	if (Y > canvas.height) {
+		Y = 1;
+		ballTwo = false;
+		powerup = false;
+		powerupXY = [];
+		time = 0;
 
+	}
 	if (y > canvas.height) {
 		if (paddlex <= x && paddlex + paddleWidth >= x && dx > 0) {
 			dy = -dy;
@@ -89,34 +129,60 @@ function draw() {
 			dx = dx + 0.5;
 		}
 		else {
-			alert("you just got powned")
+			alert("you just got pwnd")
 			location.reload();
 		}
 	}
+
+
+
+}
+function breakBlocks() {
 	for (var a = barx.length - 1; a >= 0; a--) {
-		if (barx[a] < x - r  && x - r < barx[a] + 50 && y - r - 15 < bary[a] && y - r - 15 > bary[a] - 30) {
-			dy = -dy;
+		if (barx[a] < x + r  && x - r < barx[a] + 50 && y - r - 15 < bary[a] && y - r - 15 > bary[a] - 30){
+			if (changeDirections) {
+				dy = -dy;
+			}
 			powerupXY.push(barx[a])
 			powerupXY.push(bary[a])
-			delete barx[a];
+			if (breakBar) {
+				delete barx[a];
+				points += Math.abs(200 - bary[a])
+			}
+
 			var random = Math.random();
-			if (random > 0.5 && powerup == false) {
+			if (random < 0.2 && powerup == false) {
 				color = "rgb(255, 255, 255)"
 			}
-			if (random < 0.5 && powerup == false) {
+			if (random > 0.2 && random < 0.4 && powerup == false) {
 				color = "rgb(255, 0, 0)"
 			}
-
+			if (random > 0.4 && random < 0.6 && powerup == false) {
+				color = "rgb(0, 255, 0)"
+			}
+			if (random > 0.6 && random < 0.8 && powerup == false) {
+				color = "rgb(255,165,0)"
+			}
+			if (random > 0.8 && powerup == false) {
+				color = "rgb(8, 209, 204)"
+			}
 			powerup = true;
 
+		}
+	if (barx[a] < X + r  && X - r < barx[a] + 50 && Y - r - 15 < bary[a] && Y - r - 15 > bary[a] - 30) {
+		dY = -dY;
+		delete barx[a];
+		points += Math.abs(200 - bary[a])
+	}
 
-			points += Math.abs(200 - bary[a])
+
+
+
+
 
 		}
 	};
 
-
-}
 function draw_ball() {
 	ctx.beginPath();
 	ctx.arc(x, y, r, 0, Math.PI *2)
@@ -124,7 +190,19 @@ function draw_ball() {
 	ctx.fill();
 	ctx.closePath();
 }
-
+function draw_ballTwo() {
+	if (time < 3) {
+			X = x;
+			Y = y;
+			dX = -dx;
+			dY = -dy;
+	}
+	ctx.beginPath();
+	ctx.arc(X, Y, r, 0, Math.PI *2)
+	ctx.fillStyle = "rgb(255,165,0)"
+	ctx.fill();
+	ctx.closePath();
+}
 function drawPaddle() {
 	ctx.beginPath();
 	ctx.rect(paddlex, paddley, paddleWidth, paddleHeight);
@@ -161,12 +239,12 @@ function checkHit() {
 	if (0 + r > y) {
 		dy = -dy;
 	}
-	if (canvas.height - 12 - r < y && (x > paddlex && x < paddleWidth + paddlex && dx <= -2 && dy > 0)) {
+	if (canvas.height - 12 - r < y && (x > paddlex && x < paddleWidth + paddlex && dx <= -1.5 && dy > 0)) {
 		if (x > paddlex && x < paddlex + paddleWidth / 2){
 		dy = -dy;
 	}
 	}
-	if (canvas.height - 12 - r < y && (x > paddlex && x < paddleWidth + paddlex && dx >= 2 && dy > 0)) {
+	if (canvas.height - 12 - r < y && (x > paddlex && x < paddleWidth + paddlex && dx >= 1.5 && dy > 0)) {
 		if (x > paddlex + paddleWidth / 2 && x < paddlex + paddleWidth) {
 		dy = -dy;
 	}
@@ -178,8 +256,7 @@ function checkHit() {
 
 		}
 
-
-		if (x >= paddlex + (paddleWidth / 5)+1 && x <= paddlex + (paddleWidth / 5) * 2 && dx < 1.5 && dy > 0) {
+		if (x >= paddlex + (paddleWidth / 5)+1 && x <= paddlex + (paddleWidth / 5) * 2 && dx < 2 && dy > 0) {
 			dy = -dy;
 			dx = dx - 0.4;
 		}
@@ -187,13 +264,13 @@ function checkHit() {
 		if (x >= paddlex + (paddleWidth / 5) * 2 + 1 && x <= paddlex + (paddleWidth / 5) * 3 && dy > 0) {
 			dy = -dy;
 		}
-		if (x >= paddlex + (paddleWidth / 5) * 3 + 1 && x <= paddlex + (paddleWidth / 5) * 4 && dx > -1.5 && dy > 0) {
+		if (x >= paddlex + (paddleWidth / 5) * 3 + 1 && x <= paddlex + (paddleWidth / 5) * 4 && dx > -2 && dy > 0) {
 			dy = -dy;
 			dx = dx + 0.4;
 
 
 		}
-		if (x >= paddlex + (paddleWidth / 5) * 4 + 1 && x <= paddlex + paddleWidth && dx > -1.5 && dy > 0) {
+		if (x >= paddlex + (paddleWidth / 5) * 4 + 1 && x <= paddlex + paddleWidth && dx > -2 && dy > 0) {
 			dy = -dy;
 			dx = dx + 0.9;
 		}
@@ -202,6 +279,53 @@ function checkHit() {
 
 	if (0 + r > x || canvas.width - r < x) {
 		dx = -dx;
+	}
+}
+function checkHitTwo() {
+	if (0 + r > Y) {
+		dY = -dY;
+	}
+	if (canvas.height - 12 - r < Y && (X > paddlex && X < paddleWidth + paddlex && dX <= -2 && dY > 0)) {
+		if (X > paddlex && X < paddlex + paddleWidth / 2){
+		dY = -dY;
+	}
+	}
+	if (canvas.height - 12 - r < Y && (X > paddlex && X < paddleWidth + paddlex && dX >= 2 && dY > 0)) {
+		if (X > paddlex + paddleWidth / 2 && X < paddlex + paddleWidth) {
+		dY = -dY;
+	}
+	}
+	else if (canvas.height - 15 - r < Y && (X > paddlex && X < paddleWidth + paddlex)) {
+		if (X >= paddlex && X <= paddlex + (paddleWidth / 5) && dX < 1.5 && dY > 0) {
+			dY = -dY;
+			dX = dX - 0.9;
+
+		}
+
+
+		if (X >= paddlex + (paddleWidth / 5)+1 && X <= paddlex + (paddleWidth / 5) * 2 && dX < 1.5 && dY > 0) {
+			dY = -dY;
+			dX = dX - 0.4;
+		}
+
+		if (X >= paddlex + (paddleWidth / 5) * 2 + 1 && X <= paddlex + (paddleWidth / 5) * 3 && dY > 0) {
+			dY = -dY;
+		}
+		if (X >= paddlex + (paddleWidth / 5) * 3 + 1 && X <= paddlex + (paddleWidth / 5) * 4 && dX > -1.5 && dY > 0) {
+			dY = -dY;
+			dX = dX + 0.4;
+
+
+		}
+		if (X >= paddlex + (paddleWidth / 5) * 4 + 1 && X <= paddlex + paddleWidth && dX > -1.5 && dY > 0) {
+			dY = -dY;
+			dX = dX + 0.9;
+		}
+
+	}
+
+	if (0 + r > X || canvas.width - r < X) {
+		dX = -dX;
 	}
 }
 function movePaddle() {
@@ -227,6 +351,7 @@ function powerUp() {
 	ctx.closePath();
 	powerupXY[1] += 1
 	if (time > 0) {
+		document.getElementById("time").innerHTML = "Time: " + Math.abs(Math.ceil(time/100)-10);
 		time += 1;
 	}
 	if (canvas.height < powerupXY[1]) {
@@ -269,19 +394,45 @@ function powerUp() {
 				time+= 1;
 			}
 		}
+		if (color == "rgb(0, 255, 0)" && random < 0.5) {
+			breakBar = false;
+			powerupXY = []
+			time += 1;
+		}
+		if (color == "rgb(0, 255, 0)" && random > 0.5) {
+			changeDirections = false;
+			powerupXY = []
+			time += 1;
+		}
+		if (color == "rgb(255,165,0)" && random > 0.5) {
+			ballTwo = true;
+			powerupXY = [];
+			time += 1;
+		}
+		if (color == "rgb(255,165,0)" && random < 0.5) {
+			dx = 0;
+			dy = Math.abs(dy)
+			powerupXY = [];
+			time += 1;
+		}
+		if (color == "rgb(8, 209, 204)") {
+			dialation = true;
+			powerupXY = [];
+			time +=1;
+		}
 	}
 
-	if (time == 1000) {
+	if (time >= 1000) {
 		powerup = false;
 		powerupXY = [];
 		time = 0;
 		if (paddleWidth > 75) {
 			paddleWidth /= 2;
 		}
-		else if (paddleWidth < 75) {
+		if (paddleWidth < 75) {
 			paddleWidth *=2;
 		}
-		else if (dy > 1 || dy < -1) {
+		if (dy > 1 || dy < -1) {
 			if (dy < 0) {
 				dy += 0.5
 			}
@@ -289,7 +440,7 @@ function powerUp() {
 				dy -= 0.5
 			}
 		}
-		else if (dy < 1 && dy > -1) {
+		if (dy < 1 && dy > -1) {
 			if (dy < 0) {
 				dy -= 0.5
 			}
@@ -297,9 +448,18 @@ function powerUp() {
 				dy += 0.5
 			}
 		}
-	}
-	if (canvas.height < powerupXY[1]) {
-		powerupXY = [];
-		powerup = false;
+		if (breakBar == false) {
+			breakBar = true;
+		}
+		if (changeDirections == false) {
+			changeDirections = true;
+		}
+		if (ballTwo) {
+			ballTwo = false;
+		}
+		if (dialation) {
+			r = 10;
+			dialation = false;
+		}
 	}
 }
