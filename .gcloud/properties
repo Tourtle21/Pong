@@ -1,0 +1,7 @@
+[core]
+project = tourtlecorps-com
+
+[app]
+promote_by_default = false
+suppress_change_warning = true
+
