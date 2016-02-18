@@ -74,12 +74,6 @@ function draw() {
 	if (check) {
 		buildBars();
 	}
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-	movePaddle();
-=======
->>>>>>> aac215a2512f42c0836d6c0adb577cd77cc6ae91
 	if (powerup) {
 		powerUp();
 	}
@@ -109,10 +103,6 @@ function draw() {
 		changeColor(color)
 	}
 	breakBlocks();
-<<<<<<< HEAD
-=======
->>>>>>> Powerups
->>>>>>> aac215a2512f42c0836d6c0adb577cd77cc6ae91
 	checkHit();
 	movePaddle();
 	checkBars();
@@ -138,7 +128,6 @@ function draw() {
 		powerupXY = [];
 		time = 0;
 
-<<<<<<< HEAD
 	}
 	if (y > canvas.height) {
 		if (paddlex <= x && paddlex + paddleWidth >= x && dx > 0) {
@@ -182,64 +171,10 @@ function breakBlocks() {
 	}
 
 
-=======
-	}
-	if (y > canvas.height) {
-		if (paddlex <= x && paddlex + paddleWidth >= x && dx > 0) {
-			dy = -dy;
-			dx = dx - 0.5;
-		}
-		if (paddlex <= x && paddlex + paddleWidth >= x && dx < 0) {
-			dy = -dy;
-			dx = dx + 0.5;
-		}
-		else {
-			alert("you just got pwnd")
-			location.reload();
-		}
-	}
-
-
-
-}
-function breakBlocks() {
-	for (var a = barx.length - 1; a >= 0; a--) {
-<<<<<<< HEAD
-		if (barx[a] < x - r  && x - r < barx[a] + 50 && y - r - 15 < bary[a] && y - r - 15 > bary[a] - 30) {
-			dy = -dy;
-			delete barx[a];
-=======
-		if (barx[a] < x + r  && x - r < barx[a] + 50 && y - r - 15 < bary[a] && y - r - 15 > bary[a] - 30){
-			if (changeDirections) {
-				dy = -dy;
-			}
-			powerupXY.push(barx[a])
-			powerupXY.push(bary[a])
-			if (breakBar) {
-				delete barx[a];
-				points += Math.abs(200 - bary[a])
-			}
-			if (ballColor == false) {
-				changeColor(color);
-				powerup = true;
-			}
-		}
-	if (barx[a] < X + r  && X - r < barx[a] + 50 && Y - r - 15 < bary[a] && Y - r - 15 > bary[a] - 30) {
-		dY = -dY;
-		delete barx[a];
-		points += Math.abs(200 - bary[a])
-	}
-
-
->>>>>>> aac215a2512f42c0836d6c0adb577cd77cc6ae91
 
 
 
 
-<<<<<<< HEAD
-=======
->>>>>>> Powerups
->>>>>>> aac215a2512f42c0836d6c0adb577cd77cc6ae91
 		}
 	};
 
@@ -402,11 +337,6 @@ function movePaddle() {
 		paddlex +=0
 	}
 }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> aac215a2512f42c0836d6c0adb577cd77cc6ae91
 function changeColor(c) {
 	var random = Math.random();
 	if (random < 0.167) {
@@ -567,7 +497,3 @@ function powerUp() {
 		}
 	}
 }
-<<<<<<< HEAD
-=======
->>>>>>> Powerups
->>>>>>> aac215a2512f42c0836d6c0adb577cd77cc6ae91
