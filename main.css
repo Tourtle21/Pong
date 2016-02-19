@@ -1,0 +1,37 @@
+body {
+	background: black;
+}
+h1 {
+	position: relative;
+	color: rgb(100, 0, 255);;
+	top: -100px;
+	left: 120px;
+}
+#main {
+	position: fixed;
+	top: 20%;
+	left: 40%;
+	height: 600px;
+	width: 400px;
+	background: rgb(100, 0, 255);
+	border-radius: 10%;
+}
+.border {
+	height: 100px;
+	width: 400px;
+	background: rgb(10, 250,  100);
+	border-radius: 30%;
+	position: relative;
+	left: 60px;
+	text-align: center;
+	padding:30px;
+	font-size: 40px;
+	text-decoration: none;
+	color: black;
+}
+.second {
+	top: 350px;
+	white-space: nowrap;
+	padding:30px 40px;
+	font-size: 41px;
+}
