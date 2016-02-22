@@ -37,6 +37,10 @@ var grow = true;
 var ballColor = false;
 var rainbow = false;
 var colorBall = "rgb(0, 0, 0)"
+var drawBot = false;
+var bottomColor = "rgb(0,0,0)"
+var inverse = false;
+var hit = false;
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 
@@ -95,6 +99,14 @@ function draw() {
 			grow = true;
 		}
 	}
+	if (drawBot) {
+		changeColor(bottomColor);
+		ctx.beginPath();
+		ctx.rect(0, canvas.height - 10, canvas.width, 10)
+		ctx.fillStyle = bottomColor;
+		ctx.fill();
+		ctx.closePath();
+	}
 
 	if (ballColor) {
 		changeColor(colorBall);
@@ -138,6 +150,10 @@ function draw() {
 			dy = -dy;
 			dx = dx + 0.5;
 		}
+		if (drawBot) {
+			drawBot = false;
+			dy = -dy
+		}
 		else {
 			alert("you just got pwnd")
 			location.reload();
@@ -162,6 +178,7 @@ function breakBlocks() {
 			if (ballColor == false) {
 				changeColor(color);
 				powerup = true;
+				hit = true;
 			}
 		}
 	if (barx[a] < X + r  && X - r < barx[a] + 50 && Y - r - 15 < bary[a] && Y - r - 15 > bary[a] - 30) {
@@ -324,44 +341,71 @@ function checkHitTwo() {
 	}
 }
 function movePaddle() {
-	if(leftPressed && paddlex > 0) {
-		paddlex += -dxPaddle;
+	if (inverse) {
+		if (leftPressed && paddlex < canvas.width - paddleWidth) {
+			paddlex -= -dxPaddle;
+		}
+		if (rightPressed && paddlex > 0) {
+			paddlex += -dxPaddle;
+		}
 	}
-	if(rightPressed && paddlex < canvas.width - paddleWidth) {
-		paddlex += dxPaddle;
-	}
-	if(rightPressed == false) {
-		paddlex += 0
-	}
-	if(leftPressed == false) {
-		paddlex +=0
+	else {
+		if(leftPressed && paddlex > 0) {
+			if (inverse && paddlex < canvas.width - paddleWidth) {
+				paddlex -= -dxPaddle;
+			}
+			else {
+				paddlex += -dxPaddle;
+			}
+		}
+		if(rightPressed && paddlex < canvas.width - paddleWidth) {
+			if (inverse) {
+				paddlex += -dxPaddle;
+			}
+			else {
+				paddlex -= -dxPaddle;
+			}
+		}
+		if(rightPressed == false) {
+			paddlex += 0
+		}
+		if(leftPressed == false) {
+			paddlex +=0
+		}
 	}
 }
 function changeColor(c) {
 	var random = Math.random();
-	if (random < 0.167) {
+	if (random < 0.14) {
 		c = "rgb(255, 255, 255)"
 	}
-	if (random > 0.167 && random < 0.334) {
+	if (random > 0.14 && random < 0.28) {
 		c = "rgb(255, 0, 0)"
 	}
-	if (random > 0.334 && random < 0.501) {
+	if (random > 0.28 && random < 0.42) {
 		c = "rgb(0, 255, 0)"
 	}
-	if (random > 0.501 && random < 0.668) {
+	if (random > 0.42 && random < 0.56) {
 		c = "rgb(255,165,0)"
 	}
-	if (random > 0.668 && random < 0.835) {
+	if (random > 0.56 && random < 0.70) {
 		c = "rgb(8, 209, 204)"
 	}
-	if (random > 0.835) {
+	if (random > 0.7 && random < 0.84) {
+		c = "rgb(214, 74, 232)"
+	}
+	if (random > 0.84) {
 		rainbow = true;
 	}
 	if (ballColor) {
 		colorBall = c;
 	}
-	if (ballColor == false) {
+	if (drawBot) {
+		bottomColor = c;
+	}
+	if (hit == true) {
 		color = c;
+		hit == false;
 	}
 
 }
@@ -380,7 +424,7 @@ function powerUp() {
 	if (canvas.height < powerupXY[1]) {
 		powerupXY = [];
 		powerup = false;
-		rainbow = false;	
+		rainbow = false;
 	}
 
 	if (canvas.height - 12 - r < powerupXY[1] && (powerupXY[0] + 25 > paddlex && powerupXY[0] + 5 < paddleWidth + paddlex)) {
@@ -450,6 +494,16 @@ function powerUp() {
 			powerupXY = [];
 			time +=1;
 		}
+		if (color == "rgb(214, 74, 232)" && random < 0.5) {
+			drawBot = true;
+			powerupXY = [];
+			time +=1;
+		}
+		if (color == "rgb(214, 74, 232)" && random > 0.5) {
+			inverse = true;
+			powerupXY = [];
+			time += 1;
+		}
 		rainbow = false;
 	}
 
@@ -494,6 +548,9 @@ function powerUp() {
 		}
 		if (ballColor) {
 			ballColor = false;
+		}
+		if (inverse) {
+			inverse = false;
 		}
 	}
 }
